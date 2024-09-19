@@ -1,0 +1,53 @@
+body {
+    background-color: #1f1f1f;
+    text-align: center;
+}
+
+a {
+    color: #9e9d9d;;
+    text-decoration: none;
+}
+
+h4 {
+    color: #686868;
+    padding: 200px 0 100px 0;
+}
+
+textarea {
+    border: none;
+    background-color: #212529;
+    width: 300px;
+    height: 30px;
+    color: white;
+    resize: none;
+}
+
+textarea:focus{
+    outline: none;
+}
+
+footer {
+    color:#686868;
+    padding-top: 200px;
+}
+
+
+.tr, .td {
+    padding: 0;
+}
+
+.btn {
+    margin: 30px;
+}
+
+.table {
+    text-align: center;
+    width: 10%;
+    margin: 0 auto;
+}
+
+@media screen and (max-width: 767px) {
+    textarea {
+        width: 175px;
+    }
+}
