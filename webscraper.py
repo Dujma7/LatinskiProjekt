@@ -10,6 +10,7 @@ def radula(urlNumber):
     vocabulary = search.find(id="rj")
     words = vocabulary.find_all("li")
     wordList = []
+    cleanWordList = []
     filename = "rijeci-"+str(urlNumber)+".txt"
 
     def cleanWords():
@@ -18,17 +19,24 @@ def radula(urlNumber):
         for word in wordsClean:
             wordList.append([word[0]+": "+word[1]])
 
+    def removeItalics():
+        for word in wordList:
+            cleanWord = re.sub(r'<i>(.*?)<\/i>', r"\1", word[0])
+            cleanWordList.append(cleanWord)
+
     def createFile():
         with open(filename, "x", encoding="utf-8") as file:
             file.write("RIJECI VJEZBE BR. "+str(urlNumber)+"\n")
 
     def wordsToTxt():
         with open(filename, "a", encoding="utf-8") as file:
-            for word in wordList:
-                file.write(word[0]+"\n")
+            for word in cleanWordList:
+                file.write(word+"\n")
 
     cleanWords()
+    removeItalics()
     createFile()
     wordsToTxt()
+
 
 
