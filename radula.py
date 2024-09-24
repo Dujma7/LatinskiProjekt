@@ -65,5 +65,3 @@ def radula(urlNumber, searchForVerbs=False):
         removeItalicsVerbs()
         createFile()
         wordsToText()
-
-
