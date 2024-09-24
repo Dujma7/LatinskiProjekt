@@ -15,11 +15,9 @@ def radula(urlNumber, searchForVerbs=False):
     cleanWordList = []
     verbs = []
     cleanVerbs = []
-    filename = "rijeci-"+str(urlNumber)+".txt"
-    filenameVerbs = "glagoli-" + str(urlNumber) + ".txt"
 
     def cleanWords():
-        regex = r'<p class="(?:word|word-old)">(.*?)</p>(.*?)</li>'
+        regex = r'<p class="(?:word|word-old)">(.*?)</p>(.*?)</li>' #regex for cleaning up the words, if the word is a verb, it is stored seperately, else it's stored in the wordList
         wordsClean = re.findall(regex, str(words))
         for word in wordsClean:
             if (re.findall(r'.*\b\d+\.', word[0])) != []:
@@ -29,20 +27,20 @@ def radula(urlNumber, searchForVerbs=False):
 
     def removeItalics():
         for word in wordList:
-            cleanWord = re.sub(r'<i>(.*?)<\/i>', r"\1", word[0])
+            cleanWord = re.sub(r'<i>(.*?)<\/i>', r"\1", word[0]) #removes the <i> tags in some words that remained after the regex cleaning
             cleanWordList.append(cleanWord)
 
     def removeItalicsVerbs():
         for word in verbs:
-            cleanVerb = re.sub(r'<i>(.*?)<\/i>', r"\1", word)
+            cleanVerb = re.sub(r'<i>(.*?)<\/i>', r"\1", word) #same thing like the one above just for verbs
             cleanVerbs.append(cleanVerb)
 
     def createFile():
-        with open(filename, "x", encoding="utf-8") as file:
-            file.write("RIJECI VJEZBE BR. " + str(urlNumber) + "\n\n")
+        with open("rijeci.txt", "x", encoding="utf-8") as file: #self-explanatory really
+            file.write("RIJECI\n\n")
 
     def wordsToText():
-        with open(filename, "a", encoding="utf-8") as file:
+        with open("rijeci.txt", "a", encoding="utf-8") as file: #writes the words in first, then the verbs seperately
             for word in cleanWordList:
                 file.write(word + "\n")
             file.write("\n"+"IZDVOJENI GLAGOLI"+"\n\n")
@@ -50,9 +48,10 @@ def radula(urlNumber, searchForVerbs=False):
                 file.write(verb+"\n")
 
     def verbsToText():
-        with open(filenameVerbs, "a", encoding="utf-8") as file:
+        with open("rijeci.txt", "a", encoding="utf-8") as file: #same thing like above (used for verb searching exclusively
             for word in cleanVerbs:
                 file.write(word + "\n")
+
 
     if searchForVerbs == True:
         cleanWords()
@@ -63,5 +62,14 @@ def radula(urlNumber, searchForVerbs=False):
         cleanWords()
         removeItalics()
         removeItalicsVerbs()
-        createFile()
+        #createFile()
         wordsToText()
+
+def purgo(): #makes a set to remove duplicate words, then rewrites it in a seperate text file
+    words = set()
+    with open("rijeci.txt", encoding="utf-8") as file:
+        for fileLine in file:
+            words.add(fileLine)
+    with open("rijeciCiste.txt", "w", encoding="utf-8") as file:
+        for word in words:
+            file.write(word)
