@@ -66,8 +66,4 @@ def radula(urlNumber, searchForVerbs=False):
         createFile()
         wordsToText()
 
-for number in range(1, 80):
-    radula(number)
-
-
 
