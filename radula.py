@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 
 def radula(urlNumber, searchForVerbs=False):
+    filename = "Rijeci"+str(urlNumber)+".txt"
     num = 6
     if urlNumber > 61:
         num = 7
@@ -15,61 +16,55 @@ def radula(urlNumber, searchForVerbs=False):
     cleanWordList = []
     verbs = []
     cleanVerbs = []
+    regex = r'<p class="(?:word|word-old)">(.*?)</p>(.*?)</li>'
+    wordsClean = re.findall(regex, str(words))
 
-    def cleanWords():
-        regex = r'<p class="(?:word|word-old)">(.*?)</p>(.*?)</li>' #regex for cleaning up the words, if the word is a verb, it is stored seperately, else it's stored in the wordList
-        wordsClean = re.findall(regex, str(words))
-        for word in wordsClean:
-            if (re.findall(r'.*\b\d+\.', word[0])) != []:
-                verbs.append(word[0] + ": " + word[1])
-            else:
-                wordList.append([word[0] + ": " + word[1]])
+    for word in wordsClean:
+        if (re.findall(r'.*\b\d+\.', word[0])) != []:
+            verbs.append("'"+word[1].strip()+"'"+":"+"'"+word[0].strip()+"'")
+        else:
+            wordList.append(["'"+word[1].strip()+"'"+":"+"'"+word[0].strip()+"'"])
 
-    def removeItalics():
-        for word in wordList:
-            cleanWord = re.sub(r'<i>(.*?)<\/i>', r"\1", word[0]) #removes the <i> tags in some words that remained after the regex cleaning
-            cleanWordList.append(cleanWord)
+    for word in wordList:
+        cleanWord = re.sub(r'\s<i>(.*?)<\/i>', "", word[0])#removes the <i> tags in some words that remained after the regex cleaning
+        cleanWord = re.sub(r"\s*\(.*?\)", "", cleanWord) #removes anything in parentheses
+        cleanWord = re.sub("[\\,\\.\\-]", "", cleanWord) #removes . , —
+        cleanWordList.append(cleanWord)
 
-    def removeItalicsVerbs():
-        for word in verbs:
-            cleanVerb = re.sub(r'<i>(.*?)<\/i>', r"\1", word) #same thing like the one above just for verbs
-            cleanVerbs.append(cleanVerb)
+    for word in verbs:
+        cleanVerb = re.sub(r'\s<i>(.*?)<\/i>', "", word) #same thing like the one above just for verbs
+        cleanVerb = re.sub(r'"\s*\(.*?\)"', "", cleanVerb)
+        cleanVerb = re.sub("[,\\,\\.\\-]", "", cleanVerb)
+        cleanVerb = re.sub(r"\s—", "", cleanVerb)
+        cleanVerbs.append(cleanVerb)
 
-    def createFile():
-        with open("rijeci.txt", "x", encoding="utf-8") as file: #self-explanatory really
-            file.write("RIJECI\n\n")
-
-    def wordsToText():
+    if searchForVerbs == False:
         with open("rijeci.txt", "a", encoding="utf-8") as file: #writes the words in first, then the verbs seperately
+            file.write("RIJECI VJEZBE BR. "+str(urlNumber)+"\n\n")
             for word in cleanWordList:
                 file.write(word + "\n")
             file.write("\n"+"IZDVOJENI GLAGOLI"+"\n\n")
             for verb in cleanVerbs:
                 file.write(verb+"\n")
-
-    def verbsToText():
-        with open("rijeci.txt", "a", encoding="utf-8") as file: #same thing like above (used for verb searching exclusively
-            for word in cleanVerbs:
-                file.write(word + "\n")
-
-
-    if searchForVerbs == True:
-        cleanWords()
-        removeItalicsVerbs()
-        verbsToText()
-
+            file.write("\n")
     else:
-        cleanWords()
-        removeItalics()
-        removeItalicsVerbs()
-        #createFile()
-        wordsToText()
+        with open("GLAGOLI VJEZBE BR."+str(urlNumber), "a", encoding="utf-8") as file: #writes the words in first, then the verbs seperately
+            file.write("\n"+"IZDVOJENI GLAGOLI"+"\n\n")
+            for verb in cleanVerbs:
+                file.write(verb+"\n")
 
-def purgo(): #makes a set to remove duplicate words, then rewrites it in a seperate text file
+def purgo(finishfile):  # makes a set to remove duplicate words
     words = set()
-    with open("rijeci.txt", encoding="utf-8") as file:
+    with open("rijeciSve.txt", encoding="utf-8") as file:
         for fileLine in file:
             words.add(fileLine)
-    with open("rijeciCiste.txt", "w", encoding="utf-8") as file:
+    with open(finishfile, "w", encoding="utf-8") as file:
         for word in words:
-            file.write(word)
+           file.write(word)
+
+def interrogatum():
+    with open("glagole.txt", "a", encoding="utf-8") as file:
+        for word in wordsClean:
+            if (re.findall(r'.*\b\d+\.', word[0])) != []:
+                file.write((str(word[0]) + ": " + str(word[1])+"\n"))
+
